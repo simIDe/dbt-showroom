@@ -1,0 +1,165 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      Core fact table. One row per order line item.
+      Contains all financial metrics (revenue, discount) and operational
+      metrics (days_to_ship). This is the foundation for all sales analysis.
+    columns:
+      - name: order_id
+        description: "Foreign key to the parent order."
+        tests: [not_null]
+      - name: item_id
+        description: "Line item number within the order."
+        tests: [not_null]
+      - name: product_id
+        description: "Foreign key to dim_products."
+        tests: [not_null]
+      - name: customer_id
+        description: "Foreign key to dim_customers."
+        tests: [not_null]
+      - name: store_id
+        description: "Foreign key to dim_stores."
+        tests: [not_null]
+      - name: staff_id
+        description: "Foreign key to dim_staffs."
+        tests: [not_null]
+      - name: order_date
+        description: "Date the order was placed."
+        tests: [not_null]
+      - name: order_status
+        description: "Order status code: 1=Pending, 2=Processing, 3=Rejected, 4=Completed."
+        tests: [not_null]
+      - name: quantity
+        description: "Number of units ordered."
+        tests: [not_null]
+      - name: list_price
+        description: "Unit price at time of order."
+        tests: [not_null]
+      - name: discount
+        description: "Discount rate applied (between 0 and 1)."
+      - name: revenue
+        description: "Net revenue for this line item: quantity * list_price * (1 - discount)."
+        tests: [not_null]
+      - name: days_to_ship
+        description: "Number of days between order_date and shipped_date. NULL if not yet shipped."
+
+  - name: dim_customers
+    description: "Customer dimension. One row per customer with geographic attributes."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: full_name
+        description: "Concatenation of first_name and last_name."
+        tests: [not_null]
+      - name: city
+        description: "Customer's city."
+      - name: state
+        description: "Customer's US state."
+
+  - name: dim_products
+    description: >
+      Product dimension enriched with category and brand names.
+      One row per product.
+    columns:
+      - name: product_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: product_name
+        description: "Full product name."
+        tests: [not_null]
+      - name: category_name
+        description: "Product category (e.g. Mountain Bikes, Road Bikes)."
+        tests: [not_null]
+      - name: brand_name
+        description: "Brand of the product."
+        tests: [not_null]
+      - name: model_year
+        description: "Model year of the product."
+      - name: list_price
+        description: "Recommended retail price."
+
+  - name: dim_stores
+    description: "Store dimension. One row per store (Santa Cruz, Baldwin, Rowlett)."
+    columns:
+      - name: store_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: store_name
+        description: "Store name."
+        tests: [not_null]
+      - name: city
+        description: "City where the store is located."
+      - name: state
+        description: "US state where the store is located."
+
+  - name: dim_staffs
+    description: "Staff dimension enriched with store name. One row per staff member."
+    columns:
+      - name: staff_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: full_name
+        description: "Concatenation of first_name and last_name."
+        tests: [not_null]
+      - name: store_name
+        description: "Name of the store this staff member belongs to."
+      - name: is_active
+        description: "Whether the staff member is currently active."
+      - name: manager_id
+        description: "staff_id of this person's manager. NULL for top-level managers."
+
+  - name: mart_sales_performance
+    description: >
+      Wide denormalized table combining orders, products, customers, stores and staff.
+      This is the PRIMARY source for the revenue and operations dashboard in Looker.
+      Grain: one row per order line item.
+    columns:
+      - name: order_id
+        description: "Order identifier."
+        tests: [not_null]
+      - name: item_id
+        description: "Line item identifier within the order."
+        tests: [not_null]
+      - name: order_date
+        description: "Date the order was placed."
+        tests: [not_null]
+      - name: order_month
+        description: "First day of the month of order_date. Used for monthly aggregations."
+      - name: order_year
+        description: "First day of the year of order_date. Used for yearly aggregations."
+      - name: order_status
+        description: "Numeric status code: 1=Pending, 2=Processing, 3=Rejected, 4=Completed."
+      - name: order_status_label
+        description: "Human-readable order status label."
+      - name: store_name
+        description: "Name of the store that processed the order."
+      - name: store_city
+        description: "City of the store."
+      - name: store_state
+        description: "US state of the store."
+      - name: staff_name
+        description: "Full name of the staff member who handled the order."
+      - name: customer_name
+        description: "Full name of the customer."
+      - name: customer_state
+        description: "US state of the customer."
+      - name: product_name
+        description: "Name of the product ordered."
+      - name: category_name
+        description: "Product category."
+      - name: brand_name
+        description: "Product brand."
+      - name: quantity
+        description: "Units ordered."
+      - name: list_price
+        description: "Unit price at time of order."
+      - name: discount
+        description: "Discount rate applied (0 to 1)."
+      - name: revenue
+        description: "Net revenue: quantity * list_price * (1 - discount)."
+        tests: [not_null]
+      - name: days_to_ship
+        description: "Days between order placement and shipment. NULL if not yet shipped."

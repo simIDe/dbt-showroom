@@ -1,0 +1,155 @@
+version: 2
+
+models:
+  - name: stg_sales__customers
+    description: "Cleaned and renamed customers from the sales source. One row per customer."
+    columns:
+      - name: customer_id
+        description: "Primary key — unique identifier for each customer."
+        tests: [not_null, unique]
+      - name: first_name
+        description: "Customer's first name."
+        tests: [not_null]
+      - name: last_name
+        description: "Customer's last name."
+        tests: [not_null]
+      - name: email
+        description: "Customer's email address."
+      - name: city
+        description: "City of residence."
+      - name: state
+        description: "US state of residence."
+
+  - name: stg_sales__orders
+    description: "Cleaned orders with properly cast date fields. One row per order."
+    columns:
+      - name: order_id
+        description: "Primary key — unique identifier for each order."
+        tests: [not_null, unique]
+      - name: customer_id
+        description: "Foreign key to stg_sales__customers."
+        tests: [not_null]
+      - name: store_id
+        description: "Foreign key to stg_sales__stores."
+        tests: [not_null]
+      - name: staff_id
+        description: "Foreign key to stg_sales__staffs."
+        tests: [not_null]
+      - name: order_status
+        description: "Order status code: 1=Pending, 2=Processing, 3=Rejected, 4=Completed."
+        tests: [not_null]
+      - name: order_date
+        description: "Date the order was placed."
+        tests: [not_null]
+      - name: required_date
+        description: "Date the customer requires delivery by."
+      - name: shipped_date
+        description: "Date the order was shipped. NULL if not yet shipped."
+
+  - name: stg_sales__order_items
+    description: "Line items for each order. One row per product within an order."
+    columns:
+      - name: order_id
+        description: "Foreign key to stg_sales__orders."
+        tests: [not_null]
+      - name: item_id
+        description: "Line item number within the order."
+        tests: [not_null]
+      - name: product_id
+        description: "Foreign key to stg_production__products."
+        tests: [not_null]
+      - name: quantity
+        description: "Number of units ordered."
+        tests: [not_null]
+      - name: list_price
+        description: "Unit price at time of order."
+        tests: [not_null]
+      - name: discount
+        description: "Discount rate applied (0 to 1)."
+
+  - name: stg_sales__staffs
+    description: "Cleaned staff records. One row per staff member."
+    columns:
+      - name: staff_id
+        description: "Primary key — unique identifier for each staff member."
+        tests: [not_null, unique]
+      - name: first_name
+        description: "Staff member's first name."
+        tests: [not_null]
+      - name: last_name
+        description: "Staff member's last name."
+        tests: [not_null]
+      - name: is_active
+        description: "Whether the staff member is currently active."
+      - name: store_id
+        description: "Foreign key to stg_sales__stores."
+      - name: manager_id
+        description: "Self-referencing FK — staff_id of this person's manager. NULL for top-level managers."
+
+  - name: stg_sales__stores
+    description: "The three Local Bike stores: Santa Cruz CA, Baldwin NY, Rowlett TX."
+    columns:
+      - name: store_id
+        description: "Primary key — unique identifier for each store."
+        tests: [not_null, unique]
+      - name: store_name
+        description: "Store name."
+        tests: [not_null]
+      - name: city
+        description: "City where the store is located."
+      - name: state
+        description: "US state where the store is located."
+
+  - name: stg_production__products
+    description: "Cleaned product catalog. One row per product."
+    columns:
+      - name: product_id
+        description: "Primary key — unique identifier for each product."
+        tests: [not_null, unique]
+      - name: product_name
+        description: "Full product name."
+        tests: [not_null]
+      - name: brand_id
+        description: "Foreign key to stg_production__brands."
+        tests: [not_null]
+      - name: category_id
+        description: "Foreign key to stg_production__categories."
+        tests: [not_null]
+      - name: model_year
+        description: "Model year of the product."
+      - name: list_price
+        description: "Recommended retail price."
+        tests: [not_null]
+
+  - name: stg_production__categories
+    description: "Product categories (e.g. Mountain Bikes, Road Bikes). One row per category."
+    columns:
+      - name: category_id
+        description: "Primary key — unique identifier for each category."
+        tests: [not_null, unique]
+      - name: category_name
+        description: "Category label."
+        tests: [not_null]
+
+  - name: stg_production__brands
+    description: "Bike brands sold by Local Bike. One row per brand."
+    columns:
+      - name: brand_id
+        description: "Primary key — unique identifier for each brand."
+        tests: [not_null, unique]
+      - name: brand_name
+        description: "Brand name."
+        tests: [not_null]
+
+  - name: stg_production__stocks
+    description: "Stock levels per product per store. Grain: store_id + product_id."
+    columns:
+      - name: store_id
+        description: "Foreign key to stg_sales__stores."
+        tests: [not_null]
+      - name: product_id
+        description: "Foreign key to stg_production__products."
+        tests: [not_null]
+      - name: quantity
+        description: "Number of units available in stock."
+        tests: [not_null]

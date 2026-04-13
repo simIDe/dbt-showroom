@@ -9,9 +9,9 @@ renamed as (
         staff_id,
         store_id,
         order_status,
-        cast(nullif(order_date, 'NULL') as date)    as order_date,
-        cast(nullif(required_date, 'NULL') as date) as required_date,
-        cast(nullif(shipped_date, 'NULL') as date)  as shipped_date
+        safe_cast(order_date as date)    as order_date,
+        safe_cast(required_date as date) as required_date,
+        safe_cast(shipped_date as date)  as shipped_date
     from source
 )
 

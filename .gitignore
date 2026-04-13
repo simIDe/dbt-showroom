@@ -4,3 +4,9 @@ target/
 dbt_packages/
 logs/
 dbt_internal_packages/
+
+# Project planning docs
+PLAN.md
+
+# GCP Service Account
+localbike-showroom-0f11c2350466.json

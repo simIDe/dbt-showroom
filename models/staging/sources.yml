@@ -24,7 +24,8 @@ sources:
           - name: order_status
             tests:
               - accepted_values:
-                  values: [1, 2, 3, 4]
+                  arguments:
+                    values: [1, 2, 3, 4]
 
       - name: order_items
         description: "One row per line item within an order."

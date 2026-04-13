@@ -3,6 +3,8 @@ version: 2
 sources:
   - name: sales
     description: "Sales operational data — orders, customers, staff and stores."
+    database: localbike-showroom
+    schema: localbike_raw
     tables:
       - name: customers
         description: "One row per customer."
@@ -49,6 +51,8 @@ sources:
 
   - name: production
     description: "Product catalog — products, categories, brands and stock levels."
+    database: localbike-showroom
+    schema: localbike_raw
     tables:
       - name: products
         description: "One row per product."

@@ -1,0 +1,80 @@
+version: 2
+
+sources:
+  - name: sales
+    description: "Sales operational data — orders, customers, staff and stores."
+    tables:
+      - name: customers
+        description: "One row per customer."
+        columns:
+          - name: customer_id
+            tests: [not_null, unique]
+          - name: first_name
+            tests: [not_null]
+          - name: last_name
+            tests: [not_null]
+
+      - name: orders
+        description: "One row per order placed by a customer."
+        columns:
+          - name: order_id
+            tests: [not_null, unique]
+          - name: customer_id
+            tests: [not_null]
+          - name: order_status
+            tests:
+              - accepted_values:
+                  values: [1, 2, 3, 4]
+
+      - name: order_items
+        description: "One row per line item within an order."
+        columns:
+          - name: order_id
+            tests: [not_null]
+          - name: item_id
+            tests: [not_null]
+
+      - name: staffs
+        description: "One row per staff member."
+        columns:
+          - name: staff_id
+            tests: [not_null, unique]
+
+      - name: stores
+        description: "One row per store (Santa Cruz, Baldwin, Rowlett)."
+        columns:
+          - name: store_id
+            tests: [not_null, unique]
+
+  - name: production
+    description: "Product catalog — products, categories, brands and stock levels."
+    tables:
+      - name: products
+        description: "One row per product."
+        columns:
+          - name: product_id
+            tests: [not_null, unique]
+          - name: category_id
+            tests: [not_null]
+          - name: brand_id
+            tests: [not_null]
+
+      - name: categories
+        description: "Product categories (e.g. Mountain Bikes, Road Bikes)."
+        columns:
+          - name: category_id
+            tests: [not_null, unique]
+
+      - name: brands
+        description: "Bike brands sold by Local Bike."
+        columns:
+          - name: brand_id
+            tests: [not_null, unique]
+
+      - name: stocks
+        description: "Stock quantity per product per store. Grain: store_id + product_id."
+        columns:
+          - name: store_id
+            tests: [not_null]
+          - name: product_id
+            tests: [not_null]

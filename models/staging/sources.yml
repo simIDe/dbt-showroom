@@ -28,6 +28,7 @@ sources:
               - accepted_values:
                   arguments:
                     values: [1, 2, 3, 4]
+                    quote: false
 
       - name: order_items
         description: "One row per line item within an order."

@@ -13,11 +13,17 @@ The role of the analytics engineer here is to model the raw data so that the ope
 - Which staff members generate the most revenue?
 - Where are the stock imbalances across stores?
 
+## Dashboard output
+
+The models feed a Metabase dashboard covering revenue trends, store performance, product analysis, operations and customer geography.
+
+![Revenue & Sales dashboard](assets/dashboard_metabase.png)
+
 ## Stack
 
 - **BigQuery** — cloud data warehouse, hosts raw and transformed data
 - **dbt Cloud** — transformation layer, runs and tests all models
-- **Looker Studio** — business intelligence, connects to the marts layer
+- **Metabase** — business intelligence, connects to the marts layer
 
 ## Project structure
 
